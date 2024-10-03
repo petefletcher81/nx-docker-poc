@@ -1,10 +1,135 @@
 {
+  "root": "apps/poc-e2e",
+  "targets": {
+    "lint": {
+      "cache": true,
+      "options": { "cwd": "apps/poc-e2e", "command": "eslint ." },
+      "inputs": [
+        "default",
+        "^default",
+        "{workspaceRoot}/eslint.config.js",
+        "{projectRoot}/eslint.config.js",
+        "{workspaceRoot}/tools/eslint-rules/**/*",
+        { "externalDependencies": ["eslint"] }
+      ],
+      "outputs": ["{options.outputFile}"],
+      "metadata": {
+        "technologies": ["eslint"],
+        "description": "Runs ESLint on project",
+        "help": {
+          "command": "npx eslint --help",
+          "example": { "options": { "max-warnings": 0 } }
+        }
+      },
+      "executor": "nx:run-commands",
+      "configurations": {},
+      "parallelism": true
+    },
+    "e2e": {
+      "options": { "cwd": "apps/poc-e2e", "command": "cypress run" },
+      "cache": true,
+      "inputs": [
+        "default",
+        "^production",
+        { "externalDependencies": ["cypress"] }
+      ],
+      "outputs": [
+        "{workspaceRoot}/dist/cypress/apps/poc-e2e/videos",
+        "{workspaceRoot}/dist/cypress/apps/poc-e2e/screenshots"
+      ],
+      "parallelism": true,
+      "metadata": {
+        "technologies": ["cypress"],
+        "description": "Runs Cypress Tests",
+        "help": {
+          "command": "npx cypress run --help",
+          "example": { "args": ["--dev", "--headed"] }
+        }
+      },
+      "executor": "nx:run-commands",
+      "configurations": {}
+    },
+    "e2e-ci--src/e2e/app.cy.ts": {
+      "outputs": [
+        "{workspaceRoot}/dist/cypress/apps/poc-e2e/videos",
+        "{workspaceRoot}/dist/cypress/apps/poc-e2e/screenshots"
+      ],
+      "inputs": [
+        "default",
+        "^production",
+        { "externalDependencies": ["cypress"] }
+      ],
+      "cache": true,
+      "options": {
+        "cwd": "apps/poc-e2e",
+        "command": "cypress run --env webServerCommand=\"npx nx run poc:serve-static\" --spec src/e2e/app.cy.ts --config='{\"baseUrl\": \"http://localhost:4200\"}'"
+      },
+      "parallelism": false,
+      "metadata": {
+        "technologies": ["cypress"],
+        "description": "Runs Cypress Tests in src/e2e/app.cy.ts in CI",
+        "help": {
+          "command": "npx cypress run --help",
+          "example": { "args": ["--dev", "--headed"] }
+        }
+      },
+      "executor": "nx:run-commands",
+      "configurations": {}
+    },
+    "e2e-ci": {
+      "executor": "nx:noop",
+      "cache": true,
+      "inputs": [
+        "default",
+        "^production",
+        { "externalDependencies": ["cypress"] }
+      ],
+      "outputs": [
+        "{workspaceRoot}/dist/cypress/apps/poc-e2e/videos",
+        "{workspaceRoot}/dist/cypress/apps/poc-e2e/screenshots"
+      ],
+      "dependsOn": [
+        {
+          "target": "e2e-ci--src/e2e/app.cy.ts",
+          "projects": "self",
+          "params": "forward"
+        }
+      ],
+      "parallelism": false,
+      "metadata": {
+        "technologies": ["cypress"],
+        "description": "Runs Cypress Tests in CI",
+        "nonAtomizedTarget": "e2e",
+        "help": {
+          "command": "npx cypress run --help",
+          "example": { "args": ["--dev", "--headed"] }
+        }
+      },
+      "configurations": {},
+      "options": {}
+    },
+    "open-cypress": {
+      "options": { "cwd": "apps/poc-e2e", "command": "cypress open" },
+      "metadata": {
+        "technologies": ["cypress"],
+        "description": "Opens Cypress",
+        "help": {
+          "command": "npx cypress open --help",
+          "example": { "args": ["--dev", "--e2e"] }
+        }
+      },
+      "executor": "nx:run-commands",
+      "configurations": {},
+      "parallelism": true
+    }
+  },
+  "projectType": "application",
+  "metadata": {
+    "targetGroups": { "E2E (CI)": ["e2e-ci--src/e2e/app.cy.ts", "e2e-ci"] }
+  },
   "name": "poc-e2e",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "projectType": "application",
   "sourceRoot": "apps/poc-e2e/src",
   "tags": [],
-  "implicitDependencies": ["poc"],
-  "// targets": "to see all targets run: nx show project poc-e2e --web",
-  "targets": {}
+  "implicitDependencies": ["poc"]
 }

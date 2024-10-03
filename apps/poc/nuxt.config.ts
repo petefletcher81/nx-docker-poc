@@ -7,8 +7,14 @@ export default defineNuxtConfig({
   srcDir: 'src',
   devtools: { enabled: true },
   devServer: {
-    host: 'localhost',
+    host: '0.0.0.0',
     port: 4200,
+  },
+
+  app: {
+    baseURL: process.env.BASE_URL || '/',
+    host: process.env.HOST || '0.0.0.0',
+    port: process.env.PORT || 4200,
   },
   typescript: {
     typeCheck: true,

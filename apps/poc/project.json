@@ -1,8 +1,125 @@
 {
+  "root": "apps/poc",
+  "targets": {
+    "lint": {
+      "cache": true,
+      "options": { "cwd": "apps/poc", "command": "eslint ." },
+      "inputs": [
+        "default",
+        "^default",
+        "{workspaceRoot}/eslint.config.js",
+        "{projectRoot}/eslint.config.js",
+        "{workspaceRoot}/tools/eslint-rules/**/*",
+        { "externalDependencies": ["eslint"] }
+      ],
+      "outputs": ["{options.outputFile}"],
+      "metadata": {
+        "technologies": ["eslint"],
+        "description": "Runs ESLint on project",
+        "help": {
+          "command": "npx eslint --help",
+          "example": { "options": { "max-warnings": 0 } }
+        }
+      },
+      "executor": "nx:run-commands",
+      "configurations": {},
+      "parallelism": true
+    },
+    "typecheck": {
+      "cache": true,
+      "inputs": [
+        "production",
+        "^production",
+        { "externalDependencies": ["typescript"] }
+      ],
+      "options": {
+        "cwd": "apps/poc",
+        "command": "tsc --noEmit -p tsconfig.app.json"
+      },
+      "metadata": {
+        "description": "Run Typechecking",
+        "help": {
+          "command": "npx tsc --help -p tsconfig.app.json",
+          "example": { "options": { "noEmit": true } }
+        }
+      },
+      "executor": "nx:run-commands",
+      "configurations": {},
+      "parallelism": true
+    },
+    "test": {
+      "options": { "cwd": "apps/poc", "command": "vitest" },
+      "cache": true,
+      "inputs": [
+        "default",
+        "^production",
+        { "externalDependencies": ["vitest"] },
+        { "env": "CI" }
+      ],
+      "outputs": ["{workspaceRoot}/coverage/apps/poc"],
+      "metadata": {
+        "technologies": ["vite"],
+        "description": "Run Vite tests",
+        "help": {
+          "command": "npx vitest --help",
+          "example": { "options": { "bail": 1, "coverage": true } }
+        }
+      },
+      "executor": "nx:run-commands",
+      "configurations": {},
+      "parallelism": true
+    },
+    "build": {
+      "options": { "cwd": "apps/poc", "command": "nuxt build" },
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": [
+        "production",
+        "^production",
+        { "externalDependencies": ["nuxt"] }
+      ],
+      "outputs": ["{projectRoot}/.nuxt", "{projectRoot}/.output"],
+      "executor": "nx:run-commands",
+      "configurations": {},
+      "parallelism": true
+    },
+    "serve": {
+      "options": { "cwd": "apps/poc", "command": "nuxt dev" },
+      "executor": "nx:run-commands",
+      "configurations": {},
+      "parallelism": true
+    },
+    "serve-static": {
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "build-static",
+        "staticFilePath": "apps/poc/dist",
+        "port": 4200,
+        "spa": false
+      },
+      "configurations": {},
+      "parallelism": true
+    },
+    "build-static": {
+      "options": { "cwd": "apps/poc", "command": "nuxt build --prerender" },
+      "cache": true,
+      "dependsOn": ["^build-static"],
+      "inputs": [
+        "production",
+        "^production",
+        { "externalDependencies": ["nuxt"] }
+      ],
+      "outputs": ["{projectRoot}/.nuxt", "{projectRoot}/.output"],
+      "executor": "nx:run-commands",
+      "configurations": {},
+      "parallelism": true
+    }
+  },
+  "metadata": {},
   "name": "poc",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "sourceRoot": "apps/poc/src",
-  "// targets": "to see all targets run: nx show project poc --web",
-  "targets": {}
+  "implicitDependencies": [],
+  "tags": []
 }

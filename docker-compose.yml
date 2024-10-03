@@ -1,0 +1,14 @@
+version: '3'
+services:
+  nx-nuxt-app:
+    build:
+      context: .
+      dockerfile: DockerFile
+    ports:
+      - '4200:4200'
+    environment:
+      - HOST=0.0.0.0
+      - PORT=4200
+    volumes:
+      - .:/app
+      - /app/node_modules

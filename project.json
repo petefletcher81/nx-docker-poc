@@ -1,0 +1,17 @@
+{
+  "name": "mypoc",
+  "targets": {
+    "serve": {
+      "executor": "nx:noop",
+      "dependsOn": ["poc:serve"]
+    },
+    "build": {
+      "executor": "nx:noop",
+      "dependsOn": ["poc:build"]
+    },
+    "lint": {
+      "executor": "nx:noop",
+      "dependsOn": ["poc:lint"]
+    }
+  }
+}
